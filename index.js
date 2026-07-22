@@ -13,14 +13,9 @@ const { scanRemoteDirectory } = require('./src/sftp');
 // Compare local and remote files
 const { compareFiles } = require('./src/comparison');
 
-// Format dates for CLI output
-const { formatDate } = require('./src/dateFormatter');
-
-// Format console output
 const {
-    formatStatus,
-    formatHeading
-} = require('./src/console');
+    reportChanges
+} = require('./src/reporter');
 
 /**
  * Main application entry point
@@ -86,7 +81,7 @@ async function main() {
 
         };
 
-        // New: scan each configured target
+        // Scan each configured target
         for (const target of project.targets) {
 
             const targetPath = path.join(
@@ -122,44 +117,12 @@ async function main() {
                 remoteFiles
             );
 
-
-            console.log('');
-            console.log(
-                formatHeading(
-                    `${target.name} changes:`
-                )
-            );
-
-            console.log('');
-
             // Display differences
-            differences.forEach(change => {
-
-                console.log(
-                    formatStatus(
-                        change.status,
-                        change.path
-                    )
-                );
-
-
-                if (change.local) {
-
-                    console.log(
-                        `  Local : ${formatDate(change.local)}`
-                    );
-
-                    console.log(
-                        `  Remote: ${formatDate(change.remote)}`
-                    );
-
-                }
-
-                console.log('');
-
-            });
+            reportChanges(
+                target,
+                differences
+            );
         }
-
 
     } catch(error) {
 
