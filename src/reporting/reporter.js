@@ -17,10 +17,13 @@ const {
 // Report target changes
 // =====================================
 
-function reportChanges(
-    target,
-    changes
-) {
+function reportChanges(result) {
+
+    const {
+        target,
+        differences,
+        summary
+    } = result;
 
     console.log('');
 
@@ -31,7 +34,7 @@ function reportChanges(
     );
 
 
-    if (!changes.length) {
+    if (!differences.length) {
 
         console.log(
             'No changes detected'
@@ -41,46 +44,23 @@ function reportChanges(
 
     }
 
-
-    let remoteNewer = 0;
-    let remoteOnly = 0;
-
-
-    changes.forEach(change => {
-
-        if (
-            change.status === 'remote-newer'
-        ) {
-            remoteNewer++;
-        }
-
-
-        if (
-            change.status === 'remote-only'
-        ) {
-            remoteOnly++;
-        }
-
-    });
-
-
     console.log(
-        `Changes: ${changes.length}`
+        `Changes: ${summary.changes}`
     );
 
     console.log(
-        `Remote newer: ${remoteNewer}`
+        `Remote newer: ${summary.remoteNewer}`
     );
 
     console.log(
-        `Remote only: ${remoteOnly}`
+        `Remote only: ${summary.remoteOnly}`
     );
 
 
     console.log('');
 
 
-    changes.forEach(change => {
+    differences.forEach(change => {
 
         console.log(
             formatStatus(

@@ -5,7 +5,7 @@ const path = require('path');
 const { loadProject } = require('./src/config/project');
 
 // Scan local directory
-const { scanDirectory } = require('./src/scanners/scanner');
+const { scanDirectory } = require('./src/scanners/local');
 
 // Scan remote SFTP directory
 const { scanRemoteDirectory } = require('./src/scanners/sftp');
@@ -13,6 +13,7 @@ const { scanRemoteDirectory } = require('./src/scanners/sftp');
 // Compare local and remote files
 const { compareFiles } = require('./src/comparison/comparison');
 
+// Report changes to console
 const {
     reportChanges
 } = require('./src/reporting/reporter');
@@ -58,9 +59,16 @@ async function main() {
             )
         });
 
+        // Load project configuration
         const project = loadProject(
             projectPath
         );
+
+        // Create results object to store project and target information
+        const results = {
+            project: project.project,
+            targets: []
+        };
 
 
         // Display project information
@@ -117,12 +125,50 @@ async function main() {
                 remoteFiles
             );
 
-            // Display differences
-            reportChanges(
+            // Calculate target summary
+            const remoteNewer = differences.filter(
+                change => change.status === 'remote-newer'
+            ).length;
+
+            const remoteOnly = differences.filter(
+                change => change.status === 'remote-only'
+            ).length;
+
+
+            // Store scan results
+            results.targets.push({
+
                 target,
-                differences
-            );
+
+                localFiles: files,
+
+                remoteFiles: remoteFiles,
+
+                differences,
+
+                summary: {
+
+                    localFiles: files.length,
+
+                    remoteFiles: remoteFiles.length,
+
+                    changes: differences.length,
+
+                    remoteNewer,
+
+                    remoteOnly
+
+                }
+
+            });
         }
+
+        // Report changes for each target
+        results.targets.forEach(result => {
+
+            reportChanges(result);
+
+        });
 
     } catch(error) {
 
