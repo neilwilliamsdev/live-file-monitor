@@ -18,6 +18,13 @@ const {
     reportChanges
 } = require('./src/reporting/reporter');
 
+// Build a summary of the scan results
+const {
+    buildSummary,
+    reportSummary
+} = require('./src/reporting/summary');
+
+
 /**
  * Main application entry point
  * 
@@ -36,6 +43,7 @@ async function main() {
 
     // Validate a project path was supplied
     if (!projectArgument) {
+
         console.log(
             'Usage: node index.js <local-site-path>'
         );
@@ -51,6 +59,7 @@ async function main() {
             projectArgument
         );
 
+
         // Load project environment variables
         require('dotenv').config({
             path: path.join(
@@ -59,15 +68,20 @@ async function main() {
             )
         });
 
+
         // Load project configuration
         const project = loadProject(
             projectPath
         );
 
+
         // Create results object to store project and target information
         const results = {
+
             project: project.project,
+
             targets: []
+
         };
 
 
@@ -75,6 +89,7 @@ async function main() {
         console.log(
             `Project: ${project.project}`
         );
+
 
         // SFTP connection settings
         const sftpConfig = {
@@ -89,8 +104,10 @@ async function main() {
 
         };
 
+
         // Scan each configured target
         for (const target of project.targets) {
+
 
             const targetPath = path.join(
                 project.path,
@@ -98,15 +115,18 @@ async function main() {
                 target.localPath
             );
 
+
             const files = await scanDirectory(
                 targetPath,
                 project.ignore
             );
 
+
             // Local scan result
             console.log(
                 `${target.name}: ${files.length} local files`
             );
+
 
             // Remote SFTP scan
             const remoteFiles = await scanRemoteDirectory(
@@ -120,15 +140,18 @@ async function main() {
                 `${target.name}: ${remoteFiles.length} remote files`
             );
 
+
             const differences = compareFiles(
                 files,
                 remoteFiles
             );
 
+
             // Calculate target summary
             const remoteNewer = differences.filter(
                 change => change.status === 'remote-newer'
             ).length;
+
 
             const remoteOnly = differences.filter(
                 change => change.status === 'remote-only'
@@ -161,7 +184,21 @@ async function main() {
                 }
 
             });
+
         }
+
+
+        // Build project summary
+        results.summary = buildSummary(
+            results
+        );
+
+
+        // Display project summary
+        reportSummary(
+            results.summary
+        );
+
 
         // Report changes for each target
         results.targets.forEach(result => {
@@ -170,12 +207,16 @@ async function main() {
 
         });
 
+
     } catch(error) {
 
-        console.error(error.message);
+        console.error(
+            error.message
+        );
 
         process.exit(1);
     }
+
 }
 
 
