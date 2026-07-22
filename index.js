@@ -2,20 +2,20 @@
 const path = require('path');
 
 // Load project configuration
-const { loadProject } = require('./src/project');
+const { loadProject } = require('./src/config/project');
 
 // Scan local directory
-const { scanDirectory } = require('./src/scanner');
+const { scanDirectory } = require('./src/scanners/scanner');
 
 // Scan remote SFTP directory
-const { scanRemoteDirectory } = require('./src/sftp');
+const { scanRemoteDirectory } = require('./src/scanners/sftp');
 
 // Compare local and remote files
-const { compareFiles } = require('./src/comparison');
+const { compareFiles } = require('./src/comparison/comparison');
 
 const {
     reportChanges
-} = require('./src/reporter');
+} = require('./src/reporting/reporter');
 
 /**
  * Main application entry point
