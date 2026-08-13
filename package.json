@@ -4,7 +4,9 @@
   "description": "",
   "main": "index.js",
   "scripts": {
-    "test": "echo \"Error: no test specified\" && exit 1"
+    "emporio": "node index.js \"/Users/neilwilliams/Local Sites/emporiosurfaces\"",
+    "tm-store": "node index.js \"/Users/neilwilliams/Local Sites/tm-store-jan-26\"",
+    "all": "npm run emporio && npm run tm-store"
   },
   "keywords": [],
   "author": "",
@@ -14,6 +16,10 @@
     "chalk": "^4.1.2",
     "dotenv": "^17.4.2",
     "fast-glob": "^3.3.3",
-    "ssh2-sftp-client": "^12.1.1"
+    "ssh2-sftp-client": "^12.1.1",
+    "vscode": "^1.1.37"
+  },
+  "devDependencies": {
+    "@vscode/vsce": "^3.9.2"
   }
 }
